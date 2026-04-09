@@ -1,0 +1,288 @@
+.calendarGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  user-select: none;
+}
+
+/* ── Day Headers Row ─────────────────────────── */
+.dayHeaders {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.dayHeader {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 4px 0;
+}
+
+/* ── Days Grid ───────────────────────────────── */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  /* No row gap — preserves range band continuit across rows */
+}
+
+/* ── Day Cell Wrapper ────────────────────────── */
+.dayCellWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Range Band ──────────────────────────────── */
+.rangeBand {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 36px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 0;
+  transition: background var(--transition-slow);
+}
+
+.bandMid {
+  background: var(--color-range-mid);
+  left: 0;
+  right: 0;
+}
+
+/* start: fill right half of cell with range color */
+.bandStart {
+  background: linear-gradient(90deg, transparent 50%, var(--color-range-mid) 50%);
+  left: 0;
+  right: 0;
+}
+
+/* end: fill left half of cell with range color */
+.bandEnd {
+  background: linear-gradient(90deg, var(--color-range-mid) 50%, transparent 50%);
+  left: 0;
+  right: 0;
+}
+
+/* Applied to inRange cells only at week row boundaries */
+.bandCapLeft {
+  left: 6px;
+  border-radius: 8px 0 0 8px;
+}
+
+.bandCapRight {
+  right: 6px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* ── Day Cell Button ─────────────────────────── */
+.dayCell {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-spring),
+    box-shadow var(--transition-fast);
+  margin: 3px auto;
+  flex-shrink: 0;
+}
+
+.dayCell:hover:not(:disabled):not(.rangeStart):not(.rangeEnd):not(.inRange) {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.dayCell:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+/* ── Other Month ─────────────────────────────── */
+.otherMonth {
+  opacity: 0.2;
+  cursor: default;
+}
+
+/* ── Today ───────────────────────────────────── */
+.today {
+  font-weight: 600;
+  color: var(--color-accent) !important;
+  box-shadow: 0 0 0 1.5px var(--color-accent);
+}
+
+.today:hover:not(:disabled) {
+  background: rgba(var(--accent-rgb, 100, 200, 220), 0.15);
+}
+
+/* ── Range Start ─────────────────────────────── */
+.rangeStart {
+  background: var(--color-range-start) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), var(--shadow-sm);
+  transform: scale(1.08);
+}
+
+/* ── Range End ───────────────────────────────── */
+.rangeEnd {
+  background: var(--color-range-end) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), var(--shadow-sm);
+  transform: scale(1.08);
+}
+
+/* ── In Range ────────────────────────────────── */
+.inRange {
+  color: var(--color-range-mid-text) !important;
+  font-weight: 500;
+}
+
+.inRange:hover:not(:disabled) {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* ── Dots Row (holiday + user event + academic) ────── */
+.dotsRow {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: badgePop 0.4s var(--transition-spring) both;
+}
+
+/* Holiday dot — accent (teal/gold per theme) */
+.dotHoliday {
+  background: var(--color-accent);
+}
+
+/* User event dot — primary (blue per theme) */
+.dotEvent {
+  background: var(--color-primary);
+}
+
+/* Academic calendar dot — amber/orange */
+.dotAcademic {
+  background: #f59e0b;
+}
+
+/* Shift number up when any dots are present */
+.hasDots .dayNumber {
+  transform: translateY(-2px);
+}
+
+.dayNumber {
+  display: block;
+  line-height: 1;
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+/* Holiday date — number takes accent color */
+.holidayNumber {
+  color: var(--color-accent) !important;
+  font-weight: 700;
+}
+
+/* ── Type Label (tiny text under number) ─────── */
+.typeLabel {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.typeLabel.exam     { color: #f87171; }
+.typeLabel.sessional { color: #fb923c; }
+.typeLabel.holiday  { color: var(--color-accent); }
+.typeLabel.event    { color: #a5b4fc; }
+
+
+/* ── Tooltip ─────────────────────────────────── */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease both;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(20, 20, 30, 0.95);
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 480px) {
+  .dayCell {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  .rangeBand {
+    height: 32px;
+  }
+
+  .dayHeader {
+    font-size: 0.55rem;
+  }
+}
